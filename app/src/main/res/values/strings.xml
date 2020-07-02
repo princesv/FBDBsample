@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FBDBsample2</string>
+    <array name="genere">
+        <item>sufi</item>
+        <item>classical</item>
+        <item>rock</item>
+    </array>
+</resources>
