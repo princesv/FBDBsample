@@ -1,12 +1,15 @@
 package com.prince.fbdbsample2;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -65,6 +68,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        listViewArtists.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Artist artist=artistList.get(position);
+                showUpdateDialog(artist.getArtistId(),artist.getArtistName());
+                return false;
+            }
+        });
+
+
     }
 
     @Override
@@ -89,6 +103,42 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void showUpdateDialog(String artistId,String artistName){
+        AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(this);
+        LayoutInflater inflater=getLayoutInflater();
+        final View dialogView=inflater.inflate(R.layout.update_dialog,null);
+
+        dialogBuilder.setView(dialogView);
+        final EditText editTextName=dialogView.findViewById(R.id.dialogArtist);
+        final Spinner spinnerGenere=dialogView.findViewById(R.id.dialogSpinner);
+        final Button updateButton=dialogView.findViewById(R.id.dialogButton);
+        dialogBuilder.setTitle("Update Artist "+artistName);
+        final AlertDialog alertDialog=dialogBuilder.create();
+        alertDialog.show();
+
+        final String iD=artistId;
+
+        updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name=editTextName.getText().toString().trim();
+                String genere=spinnerGenere.getSelectedItem().toString().trim();
+                if(TextUtils.isEmpty(name)){
+                    Toast.makeText(MainActivity.this, "name not entered", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Artist artist = new Artist(iD, name, genere);
+                    DatabaseReference dbrEdit = FirebaseDatabase.getInstance().getReference("artist").child(iD);
+
+                    dbrEdit.setValue(artist);
+                    Toast.makeText(MainActivity.this, "Update Successful", Toast.LENGTH_SHORT).show();
+                    alertDialog.dismiss();
+                }
+            }
+        });
+
     }
 
     private void addArtist(){
