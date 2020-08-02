@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showUpdateDialog(String artistId,String artistName){
+    private void showUpdateDialog(final String artistId, String artistName){
         AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(this);
         LayoutInflater inflater=getLayoutInflater();
         final View dialogView=inflater.inflate(R.layout.update_dialog,null);
@@ -114,11 +114,22 @@ public class MainActivity extends AppCompatActivity {
         final EditText editTextName=dialogView.findViewById(R.id.dialogArtist);
         final Spinner spinnerGenere=dialogView.findViewById(R.id.dialogSpinner);
         final Button updateButton=dialogView.findViewById(R.id.dialogButton);
+        final Button deleteButton=dialogView.findViewById(R.id.deleteButton);
         dialogBuilder.setTitle("Update Artist "+artistName);
         final AlertDialog alertDialog=dialogBuilder.create();
         alertDialog.show();
 
         final String iD=artistId;
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseReference drArtist=FirebaseDatabase.getInstance().getReference("artist").child(artistId);
+                DatabaseReference drtracks=FirebaseDatabase.getInstance().getReference("tracks").child(artistId);
+                drArtist.removeValue();
+                drtracks.removeValue();
+            }
+        });
 
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
